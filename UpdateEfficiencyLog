@@ -1,0 +1,66 @@
+import datetime
+from Spotfire. Dxp. Data import *
+import clr
+clr. AddReference('System')
+from System.IO import FileStream, FileMode, File, MemoryStream, SeekOrigin, StreamWriter 
+import System.String
+from Spotfire.Dxp.Data.Import import TextDataReaderSettings
+from Spotfire.Dxp.Data.Import import TextFileDataSource
+from Spotfire.Dxp.Application.Filters import *
+from Spotfire.Dxp.Framework.ApplicationModel import +
+from Spotfire.Dxp.Framework.Library import *|
+from System import Environment, Threading
+
+CurrentUserID=Threading.Thread.CurrentPrincipal.Identity.Name 
+template_typ= "OperationManagementMain'	####Use Current Tenplate Name
+print "CurrentUserID=" + CurrentUserlD 
+print ”template_typ=" + template_typ
+ScriptName = "GetTargetCostColumn"	###Use Current Script Name
+
+def Mai() ： ###当前脚本主程序 
+  ......
+ 
+StartTime = datetime.datetime.now() 
+Main()
+EndTime = datetime.datetime.now()
+TimeDiff = EndTime-StartTime
+Seconds = TimeDiff.seconds
+if Seconds>=3：
+  ####将运行时间的信息输出到固定路径
+  stream=MemoryStream()
+  csvVriter=StreamWriter(stream)
+  csvWriter. WriteLine("模板类型，用户名,脚本,运行开始时间，运行结束时间,运行时长\r\n")
+  csvWriter. VriteLine(tenplate_typ+", "+CurrentUserID+","+ScriptName+","+str(StartTime)+"," +str(StartTime) +","+str (TimeDiff)+ "\r\n") 
+  settings=TextDataReaderSettings()
+  settings.Separator=","
+  settings.AddColumnNameRow(O)
+  settings.ClearDataTypes(False)
+  settings.SetDataType(0, DataType. String)
+  settings.SetDataType(1, DataType. String)
+  settings.SetDataType(2, DataType. String)
+  settings.SetDataType(3, DataType. String)
+  settings.SetDataType(4, DataType. String)
+  settings.SetDataType(5, DataType. String)
+  csvVriter. Flush()
+  stream.Seek(0,SeekOrigin.Begin) 
+  fs=TextFileDataSource(stream,settings)
+  dt = Document.Data.Tables.TryGetValue("EfficiencyLog") [1]
+  settings = AddRowsSettings(dt, fs)
+  dt.AddRows(fs, settings)
+  def ExportDataSet(ParentFolderPath, SourceTableName, SBDFFileName)：
+    '''
+    用途：将数据表导出到library生成sbdf
+    ParentFolderPath:导出的路径，例："/PhaselI/FunctionDataSource/SBDF_User"
+    SBDFFileName：导出成为SBDF的名字，例：“BookMarkTest”
+    SourceTableName ：需要被导出的数据表的名称
+    '''
+    libraryManager = Application.GetService(LibraryManager)
+    found, item=libraryManager.TryGetItem(ParentFolderPath, LibraryltemType.Folder, LibraryltemRetrievalOption.IncludeProperties)
+    found2,item2=librarylanager.TryGetltem(ParentFolderPath+"/" +SBDFFi1eName, LibraryltemType.SbdfDataFile, LibraryltemRetrievalOption.IncludeProperties:
+    if found2：
+      libraryManager.Delete(item2)
+    dt = Document.Data.Tables.TryGetValue(SourceTableName) [1]
+    dt.ExportDataToLibrary(item, SBDFFileName)
+    #found, item=librarymanager.TryGetItem(ParentFolderPath+"/"+SBDFFileName, LibraryltemType. SbdfDataFile, LibraryltemRetrievalOption. Inc1udeProperties)
+  ExportDataSet("/Phasell/FunctionDataSource", "EfficiencyLog", "Efficiencylog")
+
