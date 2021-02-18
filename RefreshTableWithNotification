@@ -1,0 +1,32 @@
+from Spotfire.Dxp.Data import *
+from System.Collections.Generic import List, Dictionary 
+from Spotfire.Dxp.Data import DataTable 
+from System.Collections import ArrayList
+from Spotfire.Dxp.Framework.ApplicationModel import NotificationService
+
+
+'''
+用途：在Spotfire内刷新某些表单，如刷新失败，则出现提示报错
+'''
+
+# Empty list to hold DataTables
+Tbls = List[DataTable]()
+
+Tbls.Add(Document.Data.Tables["dt1"]) #dt1为需要刷新的数据表名
+#Tbls.Add(dt2) #dt2 a DataTable string parameter, 可继续添加数据表，刷新多个
+#Tbls.Add(dt3) #dt3 a DataTable string parameter, 可继续添加数据表，刷新多个
+
+# Notification service
+notify = Application.GetService[NotificationService]();
+
+# Execute something after tables are loaded
+def afterLoad(exception, Document=Document, notify=notify):
+	if not exception:
+		Document.Properties["FSTAFFINFO"] = "OK"  #FSTAFFINFO为某Document Property名，用于提示用户表单刷新结果
+	else:
+		notify.AddErrorNotification("Error refreshing table(s)","Error details",str(exception))
+		Document.Properties["FSTAFFINFO"] = "Error,pass"
+		pass
+
+# Refresh table(s)
+Document.Data.Tables.RefreshAsync(Tbls, afterLoad)

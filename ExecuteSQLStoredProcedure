@@ -1,0 +1,33 @@
+from Spotfire.Dxp.Data import AddRowsSettings
+import System
+from System import Threading, DateTime
+from System.IO import StringReader, StreamReader, StreamWriter, MemoryStream, SeekOrigin
+from Spotfire.Dxp.Data import DataType, DataTableSaveSettings
+from Spotfire.Dxp.Data.Import import TextFileDataSource, TextDataReaderSettings
+from Spotfire.Dxp.Data import *
+import time
+
+import clr, datetime
+clr.AddReference('System.Data')
+clr.AddReference("System.Windows.Forms")
+from System.Data import SqlClient
+from System.Windows.Forms import MessageBox, MessageBoxButtons
+from System.Windows.Forms import DialogResult
+
+
+'''
+用途：在Spotfire内调用cmd传参并执行sql server中的某存储过程
+sql server地址、Database地址、UID和PWD需替换为适用该存储过程的相应值
+'''
+
+sqlStr = "exec 存储过程名称,'"+参数1+"','"+参数2+"','"+参数3+"'"
+print sqlStr
+conn = SqlClient.SqlConnection("Server=172.0.0.86;Database=PERFMANAGER;UID=sa;PWD=Pkiinf20150625!")
+conn.Open()
+
+cmd = SqlClient.SqlCommand(sqlStr, conn)
+		
+exe = cmd.ExecuteReader()
+exe.Close()
+
+conn.Close()
